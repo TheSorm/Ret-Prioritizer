@@ -88,11 +88,14 @@ function findBestPrio() {
 	let endTime = document.getElementById("MaxFightLength").valueAsNumber * s
 	let timeStep = document.getElementById("Timestep").valueAsNumber * s
 	
+	document.getElementById("RunButton").disabled = true;
+	
 	const prioWorker = new Worker("worker.js");
 	prioWorker.postMessage([abilitys, startTime, endTime, timeStep, spellCDs, spellDmgs, spellGcds]);
 	
 	prioWorker.onmessage = function(e) {
 		document.getElementById('OutputArea').value = e.data;
+		document.getElementById("RunButton").disabled = false;
 	}
 	
 } 
