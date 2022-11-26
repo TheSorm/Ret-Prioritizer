@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Ret-Prioritizer</title>
+    <link rel="stylesheet" href="./style.css">
+    <!--<link rel="icon" href="./favicon.ico" type="image/x-icon">-->
+	<script src="index.js"></script>
+  </head>
+  <body>
+	<div class="setting-container">
+		<div><input type="checkbox" checked id="JudgementEnabled"></div>
+		<div>Judgement</div>
+		<div><label>Avg Cast:</label><br><input id="JudgementAvrCast" type="number" step="any" value="6933.1" min="0"><br></div>
+		<div><label>Cooldown:</label><br><input id="JudgementCD" type="number" step="any" value="8" min="0"><br></div>
+		<div></div>
+		
+		<div><input type="checkbox" checked id="CrusaderStrikeEnabled"></div>
+		<div>Crusader Strike</div>
+		<div><label>Avg Cast:</label><br><input id="CrusaderStrikeAvrCast" type="number" step="any" value="3007.6" min="0"><br></div>
+		<div><label>Cooldown:</label><br><input id="CrusaderStrikeCD" type="number" step="any" value="4" min="0"><br></div>
+		<div><label>Crit %:</label><br><input id="CrusaderStrikeCrit" type="number" step="any" value="44.23" min="0" max="100"><br></div>
+		
+		<div><input type="checkbox" checked id="DivineStormEnabled"></div>
+		<div>Divine Storm</div>
+		<div><label>Avg Cast:</label><br><input id="DivineStormAvrCast" type="number" step="any" value="4295.7" min="0"><br></div>
+		<div><label>Cooldown:</label><br><input id="DivineStormCD" type="number" step="any" value="10" min="0"><br></div>
+		<div><label>Crit %:</label><br><input id="DivineStormCrit" type="number" step="any" value="44.23" min="0" max="100"><br></div>
+		
+		<div><input type="checkbox" checked id="HammerOfWrathEnabled"></div>
+		<div>Hammer of Wrath</div>
+		<div><label>Avg Cast:</label><br><input id="HammerOfWrathAvrCast" type="number" step="any" value="7091.1" min="0"><br></div>
+		<div><label>Cooldown:</label><br><input id="HammerOfWrathCD" type="number" step="any" value="6" min="0"><br></div>
+		<div><label>Crit %:</label><br><input id="HammerOfWrathCrit" type="number" step="any" value="94.83" min="0" max="100"><br></div>
+		
+		<div><input type="checkbox" checked id="ExorcismEnabled"></div>
+		<div>Exorcism</div>
+		<div><label>Avg Cast:</label><br><input id="ExorcismAvrCast" type="number" step="any" value="5601.5" min="0"><br></div>
+		<div><label>Cooldown:</label><br><input id="ExorcismCD" type="number" step="any" value="15" min="0"><br></div>
+		<div></div>
+		
+		<div><input type="checkbox" checked id="ConsecrationEnabled"></div>
+		<div>Consecration</div>
+		<div><label>Avg Hit:</label><br><input id="ConsecrationAvrHit" type="number" step="any" value="642.7" min="0"><br></div>
+		<div><label>Cooldown:</label><br><input id="ConsecrationCD" type="number" step="any" value="10" min="0"><br></div>
+		<div><label>Miss %:</label><br><input id="ConsecrationMiss" type="number" step="any" value="2.3" min="0" max="100"><br></div>
+		
+		<div><input type="checkbox" checked id="HolyWrathEnabled"></div>
+		<div>Holy Wrath</div>
+		<div><label>Avg Cast:</label><br><input id="HolyWrathAvrCast" type="number" step="any" value="2948.6" min="0"><br></div>
+		<div><label>Cooldown:</label><br><input id="HolyWrathCD" type="number" step="any" value="30" min="0"><br></div>
+		<div></div>
+		
+		<div><input type="checkbox" checked id="RighteousVengeanceEnabled"></div>
+		<div>Righteous Vengeance</div>
+		<div><label>Avg Cast:</label><br><input id="RighteousVengeanceAvrCast" type="number" step="any" value="1668.9" min="0"><br></div>
+		<div></div>
+		<div></div>
+		
+		<div><input type="checkbox" checked id="SealOfVengeanceEnabled"></div>
+		<div>Seal of Vengeance</div>
+		<div><label>Avg Cast:</label><br><input id="SealOfVengeanceAvrCast" type="number" step="any" value="1867.8" min="0"><br></div>
+		<div></div>
+		<div></div>
+	</div>
+	<div class="run-container">
+	<div><label>Min Fight Length (s):</label><br><input id="MinFightLength" type="number" step="1" value="175" min="0"><br></div>
+	<div><label>Max Fight Length (s):</label><br><input id="MaxFightLength" type="number" step="1" value="185" min="0"><br></div>
+	<div><label>Timestep (s):</label><br><input id="Timestep" type="number" step="0.1" value="1" min="0.1"><br></div>
+	<div><label>Spell GCD (s):</label><br><input id="SpellGCD" type="number" step="any" value="1.280" min="0"><br></div>
+	<div></div>
+	<div></div>
+	<div></div>
+	<div><button style="padding: 2px 32px" type="button" onclick="findBestPrio()">Run</button> </div>
+	<div></div>
+	</div>
+	<textarea class="output-container" id="OutputArea" readonly></textarea>
+  </body>
+</html>
