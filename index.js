@@ -18,11 +18,6 @@ function findBestPrio() {
 	const spellGcds = new Map();
 	const abilitys = [];
 	
-	let righteousVengeanceDmg = 0
-	if (document.getElementById("RighteousVengeanceEnabled").checked){
-		righteousVengeanceDmg = document.getElementById("RighteousVengeanceAvrCast").valueAsNumber;
-	}
-	
 	let sealOfVengeanceDmg = 0
 	if (document.getElementById("SealOfVengeanceEnabled").checked){
 		sealOfVengeanceDmg = document.getElementById("SealOfVengeanceAvrCast").valueAsNumber;
@@ -31,7 +26,10 @@ function findBestPrio() {
 	if (document.getElementById("JudgementEnabled").checked) {
 		abilitys.push(Ability.Judgement);
 		spellCDs.set(Ability.Judgement, document.getElementById("JudgementCD").valueAsNumber * s);
-		spellDmgs.set(Ability.Judgement, document.getElementById("JudgementAvrCast").valueAsNumber);
+		let avrCast = document.getElementById("JudgementAvrCast").valueAsNumber
+		let crit = document.getElementById("JudgementCrit").valueAsNumber / 100
+		let righteousVengeanceDmg = (avrCast / 3.06) * 2.06 * 0.3
+		spellDmgs.set(Ability.Judgement, avrCast + (righteousVengeanceDmg * crit) );
 		spellGcds.set(Ability.Judgement, gcd);
 	}
 	
@@ -40,6 +38,7 @@ function findBestPrio() {
 		spellCDs.set(Ability.CrusaderStrike, document.getElementById("CrusaderStrikeCD").valueAsNumber * s);
 		let avrCast = document.getElementById("CrusaderStrikeAvrCast").valueAsNumber
 		let crit = document.getElementById("CrusaderStrikeCrit").valueAsNumber / 100
+		let righteousVengeanceDmg = (avrCast / 3.06) * 2.06 * 0.3
 		spellDmgs.set(Ability.CrusaderStrike, avrCast + sealOfVengeanceDmg + (righteousVengeanceDmg * crit) );
 		spellGcds.set(Ability.CrusaderStrike, gcd);
 	}
@@ -49,6 +48,7 @@ function findBestPrio() {
 		spellCDs.set(Ability.DivineStorm, document.getElementById("DivineStormCD").valueAsNumber * s);
 		let avrCast = document.getElementById("DivineStormAvrCast").valueAsNumber;
 		let crit = document.getElementById("DivineStormCrit").valueAsNumber / 100;
+		let righteousVengeanceDmg = (avrCast / 3.06) * 2.06 * 0.3
 		spellDmgs.set(Ability.DivineStorm, avrCast + sealOfVengeanceDmg + (righteousVengeanceDmg * crit) );
 		spellGcds.set(Ability.DivineStorm, gcd);
 	}
@@ -57,8 +57,7 @@ function findBestPrio() {
 		abilitys.push(Ability.HammerOfWrath);
 		spellCDs.set(Ability.HammerOfWrath, document.getElementById("HammerOfWrathCD").valueAsNumber * s);
 		let avrCast = document.getElementById("HammerOfWrathAvrCast").valueAsNumber;
-		let crit = document.getElementById("HammerOfWrathCrit").valueAsNumber / 100;
-		spellDmgs.set(Ability.HammerOfWrath, avrCast + sealOfVengeanceDmg + (righteousVengeanceDmg * crit) );
+		spellDmgs.set(Ability.HammerOfWrath, avrCast + sealOfVengeanceDmg);
 		spellGcds.set(Ability.HammerOfWrath, gcd);
 	}
 	
@@ -90,7 +89,7 @@ function findBestPrio() {
 	
 	document.getElementById("RunButton").disabled = true;
 	
-	const prioWorker = new Worker("worker.js");
+	const prioWorker = new Worker("./worker.js");
 	prioWorker.postMessage([abilitys, startTime, endTime, timeStep, spellCDs, spellDmgs, spellGcds]);
 	
 	prioWorker.onmessage = function(e) {
