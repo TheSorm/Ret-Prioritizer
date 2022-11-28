@@ -111,6 +111,8 @@ function findBestPrio() {
 	const prioWorker = new Worker("./worker.js");
 	prioWorker.postMessage([abilitys, startTime, endTime, timeStep, spellCDs, spellDmgs, gcdTypes, spellHaste, heroismCastTime, speedPotionCastTime]);
 	
+	//runRotation([Ability.HammerOfWrath, Ability.CrusaderStrike, Ability.Judgement, Ability.Consecration, Ability.DivineStorm, Ability.Exorcism, Ability.HolyWrath], spellCDs, //spellDmgs, gcdTypes, spellHaste,  180 * s, heroismCastTime, speedPotionCastTime)
+	
 	prioWorker.onmessage = function(e) {
 		document.getElementById('OutputArea').value = e.data;
 		document.getElementById("RunButton").disabled = false;
@@ -129,4 +131,3 @@ document.getElementById('SealOfVengeanceEnabled').addEventListener('change', e =
         document.getElementById('SealOfCommandEnabled').checked = false;
     }
 });
-

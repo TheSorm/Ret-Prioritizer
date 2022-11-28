@@ -90,7 +90,7 @@ function runRotation(prio, spellCDs, spellDmgs, gcdTypes, spellHaste,  fightTime
 				if(currentTime > speedPotionCastTime && currentTime <= speedPotionCastTime + 15 * s){
 					currentSpellHaste += 0.15249
 				}
-				currentGCD = Math.max(gcd - (gcd * currentSpellHaste), 1)
+				currentGCD = Math.max(gcd - (gcd * currentSpellHaste), 1 * s)
 			}
 			currentTime += currentGCD
 			subtractTimeFromCDs(currentSpellCds, currentGCD)
