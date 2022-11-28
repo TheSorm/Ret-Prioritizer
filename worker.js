@@ -8,6 +8,11 @@ const Ability = {
 	HolyWrath: "HolyWrath"
 }
 
+const GCDType = {
+	Melee: "Melee",
+	Spell: "Spell"
+}
+
 const ms = 1
 const s = 1000
 const gcd = 1500
@@ -19,14 +24,17 @@ onmessage = function(e) {
 	const timeStep = e.data[3];
 	const spellCDs = e.data[4];
 	const spellDmgs = e.data[5];
-	const spellGcds = e.data[6];
-	
+	const gcdTypes = e.data[6];
+	const spellHaste = e.data[7];
+	const heroismCastTime = e.data[8];
+	const speedPotionCastTime = e.data[9];
+
 	results = []
 	for (const prio of permutator(abilitys)) {
 		let avrPrioDmg = 0;
 		let runs = 0;
 		for (let i = startTime; i <= endTime; i+=timeStep) {
-	  		avrPrioDmg += runRotation(prio, spellCDs, spellDmgs, spellGcds, i);
+	  		avrPrioDmg += runRotation(prio, spellCDs, spellDmgs, gcdTypes, spellHaste, i, heroismCastTime, speedPotionCastTime);
 			runs++;
 		}
 		results.push([avrPrioDmg / runs, prio])
@@ -41,7 +49,7 @@ onmessage = function(e) {
 	postMessage(resultString);
 }
 
-function runRotation(prio, spellCDs, spellDmgs, spellGcds, fightTime) {
+function runRotation(prio, spellCDs, spellDmgs, gcdTypes, spellHaste,  fightTime, heroismCastTime, speedPotionCastTime) {
 	const currentSpellCds = new Map();
 	const spellUsedCount = new Map();
 	const spellLastCastAt = new Map();
@@ -71,8 +79,21 @@ function runRotation(prio, spellCDs, spellDmgs, spellGcds, fightTime) {
 		
 		
 		if(spellCast != null){
-			currentTime += spellGcds.get(spellCast)
-			subtractTimeFromCDs(currentSpellCds, spellGcds.get(spellCast))
+			let currentGCD = 0
+			if(gcdTypes.get(spellCast) === GCDType.Melee){
+				currentGCD = gcd
+			}else{
+				currentSpellHaste = spellHaste
+				if(currentTime > heroismCastTime && currentTime <= heroismCastTime + 40 * s){
+					currentSpellHaste += 0.3
+				}
+				if(currentTime > speedPotionCastTime && currentTime <= speedPotionCastTime + 15 * s){
+					currentSpellHaste += 0.15249
+				}
+				currentGCD = gcd - (gcd * currentSpellHaste)
+			}
+			currentTime += currentGCD
+			subtractTimeFromCDs(currentSpellCds, currentGCD)
 		}else{
 			let lowestCd = Math.min(...currentSpellCds.values())
 			if(lowestCd > 0){

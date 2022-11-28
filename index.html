@@ -7,7 +7,6 @@
     <title>Ret-Prioritizer</title>
     <link rel="stylesheet" href="./style.css">
     <!--<link rel="icon" href="./favicon.ico" type="image/x-icon">-->
-	<script src="index.js"></script>
   </head>
   <body>
 	<div class="setting-container">
@@ -58,18 +57,26 @@
 		<div><label>Avg Cast:</label><br><input id="SealOfVengeanceAvrCast" type="number" step="any" value="1867.8" min="0"><br></div>
 		<div></div>
 		<div></div>
+		
+		<div><input type="checkbox" id="SealOfCommandEnabled"></div>
+		<div>Seal of Command</div>
+		<div><label>Avg Hit:</label><br><input id="SealOfCommandAvrCast" type="number" step="any" value="1827.3" min="0"><br></div>
+		<div><label>Number of Targets:</label><br><input id="SealOfCommandTargets" type="number" step="any" value="4" min="1"><br></div>
+		<div><label>Miss+Dodge %:</label><br><input id="SealOfCommandMiss" type="number" step="any" value="3.75" min="0" max="100"><br></div>
+		<div></div>
 	</div>
 	<div class="run-container">
 	<div><label>Min Fight Length (s):</label><br><input id="MinFightLength" type="number" step="1" value="175" min="0"><br></div>
 	<div><label>Max Fight Length (s):</label><br><input id="MaxFightLength" type="number" step="1" value="185" min="0"><br></div>
 	<div><label>Timestep (s):</label><br><input id="Timestep" type="number" step="0.1" value="1" min="0.1"><br></div>
 	<div><label>Spell GCD (s):</label><br><input id="SpellGCD" type="number" step="any" value="1.280" min="0"><br></div>
-	<div></div>
-	<div></div>
+	<div><label>Heroism Cast Time (s):</label><br><input id="HeroismCastTime" type="number" step="1" value="5" min="0"><br></div>
+	<div><label>Potion of Speed Cast Time (s):</label><br><input id="SpeedPotionCastTime" type="number" step="1" value="5" min="0"><br></div>
 	<div></div>
 	<div><button style="padding: 2px 32px" type="button" id="RunButton" onclick="findBestPrio()">Run</button> </div>
 	<div></div>
 	</div>
 	<textarea class="output-container" id="OutputArea" readonly></textarea>
+	<script src="index.js"></script>
   </body>
 </html>
