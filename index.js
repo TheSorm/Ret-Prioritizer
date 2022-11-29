@@ -13,8 +13,12 @@ const GCDType = {
 	Spell: "Spell"
 }
 
+const SpellGCDType = {
+	Additive: "Additive",
+	Multiplicative: "Multiplicative"
+}
+
 //TODO Add Glove Enchant and make haste a list of times and percentages
-//TODO Add Multitarget to Cons
 
 const ms = 1
 const s = 1000
@@ -105,16 +109,33 @@ function findBestPrio() {
 	let startTime = document.getElementById("MinFightLength").valueAsNumber * s
 	let endTime = document.getElementById("MaxFightLength").valueAsNumber * s
 	let timeStep = document.getElementById("Timestep").valueAsNumber * s
-	let spellHaste = 1 - (document.getElementById("SpellGCD").valueAsNumber / 1.5)
-	let heroismCastTime = document.getElementById("HeroismCastTime").valueAsNumber * s
-	let speedPotionCastTime = document.getElementById("SpeedPotionCastTime").valueAsNumber * s
+	let spellHaste = document.getElementById("SpellHaste").valueAsNumber
+	
+	const hasteModifiers = [];
+
+	let heroismCastTimes = document.getElementById("HeroismCastTime").value.split(",").filter(x => x.trim().length && !isNaN(x)).map(Number)
+	for (const heroismCastTime of heroismCastTimes) {
+		hasteModifiers.push([heroismCastTime * s, 40 * s, SpellGCDType.Multiplicative, 1.3])
+	}
+	
+	let speedPotionCastTimes = document.getElementById("SpeedPotionCastTime").value.split(",").filter(x => x.trim().length && !isNaN(x)).map(Number)
+	for (const speedPotionCastTime of speedPotionCastTimes) {
+		hasteModifiers.push([speedPotionCastTime * s, 15 * s, SpellGCDType.Additive, 500])
+	}
+	
+	let hyperspeedAcceleratorsCastTimes = document.getElementById("HyperspeedAcceleratorsCastTime").value.split(",").filter(x => x.trim().length && !isNaN(x)).map(Number)
+	for (const hyperspeedAcceleratorsCastTime of hyperspeedAcceleratorsCastTimes) {
+		hasteModifiers.push([hyperspeedAcceleratorsCastTime * s, 12 * s, SpellGCDType.Additive, 340])
+	}
+	
+	console.log(hasteModifiers)
 
 	document.getElementById("RunButton").disabled = true;
 	
 	const prioWorker = new Worker("./worker.js");
-	prioWorker.postMessage([abilitys, startTime, endTime, timeStep, spellCDs, spellDmgs, gcdTypes, spellHaste, heroismCastTime, speedPotionCastTime]);
+	prioWorker.postMessage([abilitys, startTime, endTime, timeStep, spellCDs, spellDmgs, gcdTypes, spellHaste, hasteModifiers]);
 		
-	//runRotation([Ability.HammerOfWrath, Ability.Judgement, Ability.CrusaderStrike, Ability.DivineStorm, Ability.Exorcism, Ability.HolyWrath, Ability.Consecration], spellCDs, //spellDmgs, gcdTypes, spellHaste,  180 * s, heroismCastTime, speedPotionCastTime)
+	//runRotation([Ability.HammerOfWrath, Ability.Judgement, Ability.CrusaderStrike, Ability.DivineStorm, Ability.Exorcism, Ability.HolyWrath, Ability.Consecration], spellCDs, //spellDmgs, gcdTypes, spellHaste,  180 * s, hasteModifiers)
 	
 	prioWorker.onmessage = function(e) {
 		document.getElementById('OutputArea').value = e.data;

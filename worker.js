@@ -13,6 +13,12 @@ const GCDType = {
 	Spell: "Spell"
 }
 
+const SpellGCDType = {
+	Additive: "Additive",
+	Multiplicative: "Multiplicative"
+}
+
+
 const ms = 1
 const s = 1000
 const gcd = 1500
@@ -26,15 +32,14 @@ onmessage = function(e) {
 	const spellDmgs = e.data[5];
 	const gcdTypes = e.data[6];
 	const spellHaste = e.data[7];
-	const heroismCastTime = e.data[8];
-	const speedPotionCastTime = e.data[9];
+	const hasteModifiers = e.data[8];
 
 	results = []
 	for (const prio of permutator(abilitys)) {
 		let avrPrioDmg = 0;
 		let runs = 0;
 		for (let i = startTime; i <= endTime; i+=timeStep) {
-	  		avrPrioDmg += runRotation(prio, spellCDs, spellDmgs, gcdTypes, spellHaste, i, heroismCastTime, speedPotionCastTime);
+	  		avrPrioDmg += runRotation(prio, spellCDs, spellDmgs, gcdTypes, spellHaste, i, hasteModifiers);
 			runs++;
 		}
 		results.push([avrPrioDmg / runs, prio])
@@ -49,7 +54,7 @@ onmessage = function(e) {
 	postMessage(resultString);
 }
 
-function runRotation(prio, spellCDs, spellDmgs, gcdTypes, spellHaste,  fightTime, heroismCastTime, speedPotionCastTime) {
+function runRotation(prio, spellCDs, spellDmgs, gcdTypes, spellHaste,  fightTime, hasteModifiers) {
 	const currentSpellCds = new Map();
 	const spellUsedCount = new Map();
 	const spellLastCastAt = new Map();
@@ -83,14 +88,19 @@ function runRotation(prio, spellCDs, spellDmgs, gcdTypes, spellHaste,  fightTime
 			if(gcdTypes.get(spellCast) === GCDType.Melee){
 				currentGCD = gcd
 			}else{
-				currentSpellHaste = spellHaste
-				if(currentTime > heroismCastTime && currentTime <= heroismCastTime + 40 * s){
-					currentSpellHaste += 0.3
+				let spellCastingSpeed = 1.05 * 1.03
+				let currentSpellHasteRating = spellHaste
+				for (const hasteModifier of hasteModifiers) {
+					if(currentTime > hasteModifier[0] && currentTime <= hasteModifier[0] + hasteModifier[1]){
+						if(hasteModifier[2] === SpellGCDType.Multiplicative){
+							spellCastingSpeed *= hasteModifier[3]
+						}else {
+							currentSpellHasteRating += hasteModifier[3]
+						}
+					}
 				}
-				if(currentTime > speedPotionCastTime && currentTime <= speedPotionCastTime + 15 * s){
-					currentSpellHaste += 0.15249
-				}
-				currentGCD = Math.max(gcd - (gcd * currentSpellHaste), 1 * s)
+				spellCastingSpeed *= (1 + currentSpellHasteRating / 3279)
+				currentGCD = Math.max(gcd / spellCastingSpeed, 1 * s)
 			}
 			currentTime += currentGCD
 			subtractTimeFromCDs(currentSpellCds, currentGCD)
