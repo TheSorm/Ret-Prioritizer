@@ -13,6 +13,9 @@ const GCDType = {
 	Spell: "Spell"
 }
 
+//TODO Add Glove Enchant and make haste a list of times and percentages
+//TODO Add Multitarget to Cons
+
 const ms = 1
 const s = 1000
 const gcd = 1500
@@ -28,12 +31,12 @@ function findBestPrio() {
 		sealOfVengeanceDmg = document.getElementById("SealOfVengeanceAvrCast").valueAsNumber;
 	}
 	
+	let targetCount = document.getElementById("TargetCount").valueAsNumber
+	
 	let sealOfCommandDmg = 0
-	let sealOfCommandTargets = 0
 	if (document.getElementById("SealOfCommandEnabled").checked){
 		sealOfCommandDmg = document.getElementById("SealOfCommandAvrCast").valueAsNumber;
-		sealOfCommandDmg -= sealOfCommandDmg * document.getElementById("SealOfCommandMiss").valueAsNumber
-		sealOfCommandTargets = document.getElementById("SealOfCommandTargets").valueAsNumber;
+		sealOfCommandDmg -= sealOfCommandDmg * document.getElementById("SealOfCommandMiss").valueAsNumber / 100
 	}
 	
 	if (document.getElementById("JudgementEnabled").checked) {
@@ -52,7 +55,7 @@ function findBestPrio() {
 		let avrCast = document.getElementById("CrusaderStrikeAvrCast").valueAsNumber
 		let crit = document.getElementById("CrusaderStrikeCrit").valueAsNumber / 100
 		let righteousVengeanceDmg = (avrCast / 3.06) * 2.06 * 0.3
-		let socDmg = sealOfCommandDmg * Math.max(sealOfCommandTargets, 3)
+		let socDmg = sealOfCommandDmg * Math.max(targetCount, 3)
 		spellDmgs.set(Ability.CrusaderStrike, avrCast + sealOfVengeanceDmg + socDmg + (righteousVengeanceDmg * crit) );
 		gcdTypes.set(Ability.CrusaderStrike, GCDType.Melee);
 	}
@@ -63,8 +66,8 @@ function findBestPrio() {
 		let avrCast = document.getElementById("DivineStormAvrCast").valueAsNumber;
 		let crit = document.getElementById("DivineStormCrit").valueAsNumber / 100;
 		let righteousVengeanceDmg = (avrCast / 3.06) * 2.06 * 0.3
-		let socDmg = sealOfCommandDmg * Math.max(sealOfCommandTargets, 4)
-		spellDmgs.set(Ability.DivineStorm, avrCast + sealOfVengeanceDmg + (righteousVengeanceDmg * crit) );
+		let socDmg = sealOfCommandDmg * Math.max(targetCount, 4)
+		spellDmgs.set(Ability.DivineStorm, avrCast + sealOfVengeanceDmg + socDmg + (righteousVengeanceDmg * crit) );
 		gcdTypes.set(Ability.DivineStorm, GCDType.Melee);
 	}
 	
@@ -72,7 +75,7 @@ function findBestPrio() {
 		abilitys.push(Ability.HammerOfWrath);
 		spellCDs.set(Ability.HammerOfWrath, document.getElementById("HammerOfWrathCD").valueAsNumber * s);
 		let avrCast = document.getElementById("HammerOfWrathAvrCast").valueAsNumber;
-		let socDmg = sealOfCommandDmg * Math.max(sealOfCommandTargets, 3)
+		let socDmg = sealOfCommandDmg * Math.max(targetCount, 3)
 		spellDmgs.set(Ability.HammerOfWrath, avrCast + sealOfVengeanceDmg + socDmg);
 		gcdTypes.set(Ability.HammerOfWrath, GCDType.Melee);
 	}
@@ -89,7 +92,7 @@ function findBestPrio() {
 		spellCDs.set(Ability.Consecration, document.getElementById("ConsecrationCD").valueAsNumber * s);
 		let avrHit = document.getElementById("ConsecrationAvrHit").valueAsNumber;
 		let miss = document.getElementById("ConsecrationMiss").valueAsNumber / 100;
-		spellDmgs.set(Ability.Consecration, (avrHit - (avrHit * miss)) * (spellCDs.get(Ability.Consecration) / s));
+		spellDmgs.set(Ability.Consecration, (avrHit - (avrHit * miss)) * (spellCDs.get(Ability.Consecration) / s) * targetCount);
 		gcdTypes.set(Ability.Consecration, GCDType.Spell);
 	}
 	
@@ -110,8 +113,8 @@ function findBestPrio() {
 	
 	const prioWorker = new Worker("./worker.js");
 	prioWorker.postMessage([abilitys, startTime, endTime, timeStep, spellCDs, spellDmgs, gcdTypes, spellHaste, heroismCastTime, speedPotionCastTime]);
-	
-	//runRotation([Ability.HammerOfWrath, Ability.CrusaderStrike, Ability.Judgement, Ability.Consecration, Ability.DivineStorm, Ability.Exorcism, Ability.HolyWrath], spellCDs, //spellDmgs, gcdTypes, spellHaste,  180 * s, heroismCastTime, speedPotionCastTime)
+		
+	//runRotation([Ability.HammerOfWrath, Ability.Judgement, Ability.CrusaderStrike, Ability.DivineStorm, Ability.Exorcism, Ability.HolyWrath, Ability.Consecration], spellCDs, //spellDmgs, gcdTypes, spellHaste,  180 * s, heroismCastTime, speedPotionCastTime)
 	
 	prioWorker.onmessage = function(e) {
 		document.getElementById('OutputArea').value = e.data;
