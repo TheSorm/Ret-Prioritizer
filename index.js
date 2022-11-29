@@ -128,8 +128,6 @@ function findBestPrio() {
 		hasteModifiers.push([hyperspeedAcceleratorsCastTime * s, 12 * s, SpellGCDType.Additive, 340])
 	}
 	
-	console.log(hasteModifiers)
-
 	document.getElementById("RunButton").disabled = true;
 	
 	const prioWorker = new Worker("./worker.js");
